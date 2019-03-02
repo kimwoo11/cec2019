@@ -5,10 +5,11 @@ import math
 def eval_function(State, Robot):
     """ Function takes the game state and the state of the robot as input, and returns the next objective for the robot
     Also updates the Robot.nextObjective attribute to track the previously decided objective """
+
     grid = State.grid
     empty = True
-    min_trash = 10000
-    min_bin = 10000
+    min_trash = math.inf
+    min_bin = math.inf
     trash_pos = None
     bin_pos = None
 
@@ -32,10 +33,10 @@ def eval_function(State, Robot):
                 else:
                     # Some Trash Location
                     empty = False
-                    cost = nav_cost(Robot.pos,(x,y),State.costQuery)
+                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
                     if cost < min_trash:
                         min_trash = cost
-                        trash_pos = (x,y)
+                        trash_pos = (x, y)
 
     scan_score = 0
     collect_score = 0
@@ -62,7 +63,6 @@ def eval_function(State, Robot):
     if max_score == unload_score:
         Robot.nextObjective = ["Unload", bin_pos]
         return ["Unload", bin_pos]
-
 
 
 def nav_cost(curr, targ, costs):
