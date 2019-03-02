@@ -15,10 +15,11 @@ def eval_function(State, Robot):
 
     # Iterating through the list to find closest piece of trash, closest bin, and establish whether the list is either
     # fully empty or fully unexplored
+
     grid = State.grid
     empty = True
-    min_trash = 10000
-    min_bin = 10000
+    min_trash = math.inf
+    min_bin = math.inf
     trash_pos = None
     bin_pos = None
 
@@ -41,10 +42,10 @@ def eval_function(State, Robot):
                 else:
                     # Some Trash Location
                     empty = False
-                    cost = nav_cost(Robot.pos,(x,y),State.costQuery)
+                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
                     if cost < min_trash:
                         min_trash = cost
-                        trash_pos = (x,y)
+                        trash_pos = (x, y)
 
     # Calculates the Heuristic Function score for each possible action
     scan_score = 0
