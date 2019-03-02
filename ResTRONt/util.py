@@ -3,8 +3,18 @@ import math
 
 
 def eval_function(State, Robot):
-    """ Function takes the game state and the state of the robot as input, and returns the next objective for the robot
-    Also updates the Robot.nextObjective attribute to track the previously decided objective """
+    """
+    Function takes the game state and the state of the robot as input, and returns the next objective for the robot
+    Also updates the Robot.nextObjective attribute to track the previously decided objective
+
+    :param State: object of class State containing all relevant information about the instance
+    :param Robot: object of class Robot containing relevant information about the state of the Robot
+    :return: Returns an array containing the action string( either "Scan", "Collect" or "Unload") and
+             the target position to move to first
+    """
+
+    # Iterating through the list to find closest piece of trash, closest bin, and establish whether the list is either
+    # fully empty or fully unexplored
 
     grid = State.grid
     empty = True
@@ -16,12 +26,11 @@ def eval_function(State, Robot):
     for y in range(len(grid)):
         for x in range(len(grid[y])):
             item_dir = grid[y][x]
-            # trash = []
             key = item_dir.keys()
             if 'E' not in key:
                 # Not Empty
                 if 'U' in key:
-                    # unexplored
+                    # Unexplored
                     pass
                 elif "B" in key:
                     # Bin Location
@@ -38,6 +47,7 @@ def eval_function(State, Robot):
                         min_trash = cost
                         trash_pos = (x, y)
 
+    # Calculates the Heuristic Function score for each possible action
     scan_score = 0
     collect_score = 0
     unload_score = 0
@@ -48,8 +58,11 @@ def eval_function(State, Robot):
         scan_score = ks
     else:
         collect_score += kc/max(min_trash, 0.5)
-        unload_score += ku/max(min_bin, 0.5)
+        tot = sum(Robot.carry.values())
+        if tot != 0:
+            unload_score += ku/max(min_bin, 0.5)
 
+    # Returns the optimal action and saves to Robot.next Objective
     max_score = max(scan_score, collect_score, unload_score)
     if max_score == scan_score:
         scan_spot = (random.randint(0, len(grid[y])), random.randint(0, len(grid)))
