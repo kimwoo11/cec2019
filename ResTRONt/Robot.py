@@ -3,15 +3,15 @@ class Robot:
 
     def __init__(self):
         ''' Avoid using the default constructor. Use the json constructor instead '''
-        
-        pos = []
-        robot_carry = {}
-        next_objective  = []
+
+        self.pos = []
+        self.robot_carry = {}
+        self.next_objective  = []
 
     def __init__(self, json):
         ''' Initialize the robot given the instance json. '''
 
-        pos = [json["payload"]["location"]["x"], json["payload"]["location"]["y"] \
+        self.pos = [json["payload"]["location"]["x"], json["payload"]["location"]["y"], \
             json["payload"]["direction"]]
-        robot_carry = {'G': 0, 'R': 0, 'O': 0}
-        next_objective = ["", -1, -1]
+        self.robot_carry = {'G': [], 'R': [], 'O': []}
+        self.next_objective = ["", -1, -1, 0]
