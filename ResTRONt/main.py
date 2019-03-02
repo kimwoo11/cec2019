@@ -1,9 +1,10 @@
-from Requests import Request
-from Robot import *
-from State import *
-from util import *
+from requests import Request
+from ResTRONt.Robot import *
+from ResTRONt.State import *
+from ResTRONt.util import *
 
 if __name__ == "__main__":
+
 	data = Request.get('instance')
 	curr_state = State.init_map(data)
 	robot = Robot()	

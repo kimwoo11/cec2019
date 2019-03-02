@@ -1,4 +1,5 @@
-class State(object):
+class State():
+    ''' State '''
     def __init__(self):
         curr_map = []
         cost_query = {}
@@ -20,4 +21,3 @@ class State(object):
 
     def update_map(self, data):
         
-
