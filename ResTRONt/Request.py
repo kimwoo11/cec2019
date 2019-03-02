@@ -26,6 +26,13 @@ class Request:
 
         json = response.json()
         if json["type"] == "ERROR":
+            print("JSON ERROR!")
+            print("Param: ", param)
+            return -1
+
+        if json["type"] == "FAILURE":
+            print("JSON FAILURE!")
+            print("Param: ", param)
             return -1
 
         return json

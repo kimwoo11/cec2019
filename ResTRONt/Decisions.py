@@ -1,12 +1,13 @@
 import random
 import math
+from State import State
+from Robot import Robot
 
 class Decisions:
-
-    def eval_function(State, Robot):
+    def eval_function(self, state, robot):
         """
         Function takes the game state and the state of the robot as input, and returns the next objective for the robot
-        Also updates the Robot.nextObjective attribute to track the previously decided objective
+        Also updates the Robot.next_objective attribute to track the previously decided objective
 
         :param State: object of class State containing all relevant information about the instance
         :param Robot: object of class Robot containing relevant information about the state of the Robot
@@ -14,11 +15,12 @@ class Decisions:
                  the target position to move to first
         """
 
-        grid = State.grid
+        grid = state.curr_map
         min_trash = math.inf
         min_bin = math.inf
         trash_pos = None
         bin_pos = None
+        empty = True
         bin_Pspace = 1
         bin_Pcarry = 1
         unexplored = 0
@@ -37,14 +39,15 @@ class Decisions:
                 if "B" in key:
                     # Bin Location
                     bin_id = item_dir['B']
-                    bin_type = State.binType[bin_id]
+                    bin_type = state.bin_type[bin_id]
                     # Navigation Cost
-                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
+                    cost = self.nav_cost(robot.pos, (x, y), state.costQuery)
                     # Reduce cost based on current holdings of specific trash type and remaining space
                     # in the corresponding bin (relative space to normalize bins with different capacities)
-                    cost -= bin_Pspace * math.abs(State.binCount[bin_id] - State.binCap[bin_id]) / State.binCap[bin_id]
-                    cost -= bin_Pcarry * Robot.robotCarry[bin_type] / (1 + sum(Robot.robotCarry.values()))
-                    cost -=
+                    cost -= bin_Pspace * abs(state.bin_count[bin_id] - state.bin_cap[bin_id]) / state.bin_cap[bin_id]
+                    tot = len(robot.robot_carry["G"]) + len(robot.robot_carry["R"]) + len(robot.robot_carry["O"])
+
+                    cost -= bin_Pcarry * len(robot.robot_carry[bin_type]) / (1 + tot)
 
                     if cost < min_bin:
                         min_bin = cost
@@ -56,11 +59,10 @@ class Decisions:
                         empty = False
                         trashy += 1
                         # Some Trash Location
-                        cost = nav_cost(Robot.pos, (x, y), State.costQuery)
+                        cost = self.nav_cost(robot.pos, (x, y), state.costQuery)
                         if cost < min_trash:
                             min_trash = cost
                             trash_pos = (x, y)
-
         kc = 1
         ku = 1
         ks = 1
@@ -73,9 +75,9 @@ class Decisions:
             collect_score = kc / max(min_trash, 0.5)
             unload_score = ku / max(min_bin, 0.5)
 
-            scan_score = ks * unexplored / len(State.grid) * len(State.grid[0]) * max(0.5, trashy)
+            scan_score = ks * unexplored / len(state.grid) * len(state.grid[0]) * max(0.5, trashy)
 
-        next_obj = Robot.nextObjective  # Current Robot Objective
+        next_obj = robot.next_objective  # Current robot Objective
         if next_obj[0] == 'Scan':
             scan_score += momentum * next_obj[3] / (scan_score + unload_score + collect_score)
 
@@ -91,27 +93,35 @@ class Decisions:
         # If it is, add fraction to score
 
         if max_score == scan_score:
-            randx = random.randint(0, len(grid[0]))
-            randy = random.randint(0, len(grid))
-            while 'U' not in grid[randx][randy].keys():
-                randx = random.randint(0, len(grid[0]))
-                randy = random.randint(0, len(grid))
+            if next_obj[0] != "Scan":
 
-            Robot.nextObjective = ["Scan", randx, randy, max_score]
-            return ["Scan", randx, randy]
+                randx = random.randint(0, len(grid[0])-1)
+                randy = random.randint(0, len(grid)-1)
+                while 'U' not in grid[randy][randx].keys():
+                    randx = random.randint(0, len(grid[0])-1)
+                    randy = random.randint(0, len(grid)-1)
+
+                robot.next_objective = ["Scan", randx, randy, max_score]
+                print("Scan", randx, randy)
+                return ["Scan", randx, randy]
+            else:
+                print(robot.next_objective[0:3])
+                return robot.next_objective[0:3]
 
         if max_score == collect_score:
-            Robot.nextObjective = ["Collect", trash_pos[0], trash_pos[1], max_score]
+            robot.next_objective = ["Collect", trash_pos[0], trash_pos[1], max_score]
+            print("Collect", trash_pos[0], trash_pos[1])
             return ["Collect", trash_pos[0], trash_pos[1]]
 
         if max_score == unload_score:
-            Robot.nextObjective = ["Unload", bin_pos[0], bin_pos[1], max_score]
+            robot.next_objective = ["Unload", bin_pos[0], bin_pos[1], max_score]
+            print("Unload", bin_pos[0], bin_pos[1])
             return ["Unload", bin_pos[0], bin_pos[1]]
 
+        print("eval_function error")
         return 0
 
-
-    def nav_cost(curr, targ, costs):
+    def nav_cost(self, curr, targ, costs):
         '''
         :param curr: Tuple containing current position and heading of the robot
         :param targ: Tuple containing position of target
@@ -120,7 +130,7 @@ class Decisions:
         '''
 
         # Manhattan Distance (number of Moves to target)
-        manhattan = math.abs(curr[0]-targ[0]) + math.abs(curr[1]-targ[1])
+        manhattan = abs(curr[0]-targ[0]) + abs(curr[1]-targ[1])
 
         # Direction vector from current location to target
         dx = targ[0]-curr[0]
@@ -150,4 +160,4 @@ class Decisions:
             if dy != 0:                 # Will have to turn north or south
                 vertical = 1
 
-        return manhattan*costs['Move'] + (horizontal+vertical)*costs['Turn']
+        return manhattan*costs['MOVE'] + (horizontal+vertical)*costs['TURN']
