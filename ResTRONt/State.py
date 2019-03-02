@@ -6,6 +6,7 @@ class State(object):
         # Constants
         self.costQuery = data['TIME']
         self.bin_cap = {}
+        self.total_trash = data['TOTAL_COUNT']
 
         # Variables
         self.remaining_trash = {}
