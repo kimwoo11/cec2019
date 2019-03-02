@@ -17,6 +17,10 @@ if __name__ == "__main__":
 		# Robot executes next instruction if at target location
         if robot.pos[0:1] = x, y:
             # We are at the target location
+            print("Next instruction: ", next_instr)
+            print("Target x: ", x)
+            print("Target y: ", y)
+            
             if next_instr == "scan":
                 Actions.scan(curr_state, robot)
             elif next_instr == "unload":
