@@ -41,7 +41,7 @@ class Request:
         json = response.json()
         if json["type"] == "ERROR":
             return -1
-        else if json["type"] == "SUCCESS":
+        elif json["type"] == "SUCCESS":
             return 1
 
         return 0
