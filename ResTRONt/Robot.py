@@ -13,5 +13,5 @@ class Robot:
 
         self.pos = [json["payload"]["location"]["x"], json["payload"]["location"]["y"], \
             json["payload"]["direction"]]
-        self.robot_carry = {'G': 0, 'R': 0, 'O': 0}
-        self.next_objective = ["", -1, -1]
+        self.robot_carry = {'G': [], 'R': [], 'O': []}
+        self.next_objective = ["", -1, -1, 0]
