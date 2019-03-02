@@ -19,6 +19,7 @@ if __name__ == "__main__":
 
     while not curr_state.finished:
         # Get next instruction
+        print(curr_state.curr_map)
         [next_instr, x, y] = Decisions().eval_function(state=curr_state, robot=robot)
         print(next_instr, x, y)
 
@@ -30,18 +31,19 @@ if __name__ == "__main__":
         print("Current direction: ", robot.pos[2])
 
         # Robot executes next instruction if at target location
-        if robot.pos[0:1] == (x, y):
+        if robot.pos[0] == x and robot.pos[1] ==y:
             # We are at the target location
             # print("Next instruction: ", next_instr)
             # print("Target x: ", x)
             # print("Target y: ", y)
             print("hey")
 
-            if next_instr == "scan":
-                Actions.scan(curr_state, x, y)
-            elif next_instr == "unload":
+            if next_instr == "Scan":
+                Actions().scan(curr_state, x, y)
+                robot.next_objective = ["", -1, -1, 0]
+            elif next_instr == "Unload":
                 Actions.unload(curr_state, robot, x, y)
-            elif next_instr == "collect":
+            elif next_instr == "Collect":
                 Actions.collect(curr_state, robot, x, y)
             else:
                 print("Unknown command")

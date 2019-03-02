@@ -43,6 +43,6 @@ class State(object):
             else:
                 return "Big Error"
 
-        finished = data['payload']['finished']
+        finished = data['finished']
         if finished:
             self.finished = finished

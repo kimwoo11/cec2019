@@ -7,10 +7,10 @@ class Actions:
     def scan(self, curr_state, x, y):
         json = Request.post('scanArea')
         # UPDATE TO EXPLORED
-        for i in range(x - curr_state.scan_radius, x + curr_state.scan_radius + 1):
-            for j in range(y - curr_state.scan_radius, y + curr_state.scan_radius + 1):
-                if i > 0 and j > 0 and i < curr_state.curr_map[0].len() and j < curr_state.curr_map.len()\
-                and (abs(x - i) + abs(y-j) <= curr_state.scan_radius):
+        for i in range(x - curr_state.radius, x + curr_state.radius + 1):
+            for j in range(y - curr_state.radius, y + curr_state.radius + 1):
+                if i > 0 and j > 0 and i < len(curr_state.curr_map[0]) and j < len(curr_state.curr_map)\
+                and (abs(x - i) + abs(y-j) <= curr_state.radius):
                     if 'U' in curr_state.curr_map[j][i]:
                         curr_state.curr_map[j][i].pop('U', None)
                         curr_state.curr_map[j][i]['E'] = []
@@ -56,15 +56,14 @@ class Actions:
         elif y > curr_y:
             dir2 = 'N'
 
-        print('dir1: ', dir1)
-        print('dir2: ', dir2)
         print('curr_x: ', curr_x)
         print('curr_y: ', curr_y)
         print('target x: ', x)
         print('target y: ', y)
 
 
-        if dir1 == '' or dir2 == '' or dir1 == curr_dir or dir2 == curr_dir:
+        if dir1 == curr_dir or dir2 == curr_dir:
+            #print("Right Heading")
             json = Request.post('move')
             if(curr_dir == 'N'):
                 robot.pos[1] += 1
@@ -77,23 +76,7 @@ class Actions:
         else:
             if dir1 != '':
                 json = Request.post('turn', dir1)
-                print(1111111)
-                if (curr_dir == 'N'):
-                    robot.pos[1] += 1
-                if (curr_dir == 'S'):
-                    robot.pos[1] -= 1
-                if (curr_dir == 'E'):
-                    robot.pos[0] += 1
-                if (curr_dir == 'W'):
-                    robot.pos[0] -= 1
+                robot.pos[2] = dir1
             else:
                 json = Request.post('turn', dir2)
-                print(2222222)
-                if (curr_dir == 'N'):
-                    robot.pos[1] += 1
-                if (curr_dir == 'S'):
-                    robot.pos[1] -= 1
-                if (curr_dir == 'E'):
-                    robot.pos[0] += 1
-                if (curr_dir == 'W'):
-                    robot.pos[0] -= 1
+                robot.pos[2] = dir2

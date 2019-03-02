@@ -75,7 +75,7 @@ class Decisions:
             collect_score = kc / max(min_trash, 0.5)
             unload_score = ku / max(min_bin, 0.5)
 
-            scan_score = ks * unexplored / len(state.grid) * len(state.grid[0]) * max(0.5, trashy)
+            scan_score = ks * unexplored / (len(state.curr_map) * len(state.curr_map[0]) * max(0.5, trashy))
 
         next_obj = robot.next_objective  # Current robot Objective
         if next_obj[0] == 'Scan':
