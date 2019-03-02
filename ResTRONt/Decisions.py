@@ -60,12 +60,13 @@ class Decisions:
                         trashy += 1
                         # Some Trash Location
                         cost = self.nav_cost(robot.pos, (x, y), state.costQuery)
+
                         if cost < min_trash:
                             min_trash = cost
                             trash_pos = (x, y)
         kc = 1
-        ku = 1
-        ks = 1
+        ku = 5
+        ks = 3
 
         if empty:
             scan_score = ks
@@ -109,6 +110,7 @@ class Decisions:
                 return robot.next_objective[0:3]
 
         if max_score == collect_score:
+            print(trash_pos)
             robot.next_objective = ["Collect", trash_pos[0], trash_pos[1], max_score]
             print("Collect", trash_pos[0], trash_pos[1])
             return ["Collect", trash_pos[0], trash_pos[1]]

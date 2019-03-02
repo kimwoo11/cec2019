@@ -6,13 +6,13 @@ class State(object):
         # Constants
         self.costQuery = data['TIME']
         self.bin_cap = {}
-        self.total_trash = data['TOTAL_COUNT']
+        self.total_trash = data['TOTAL_COUNT']\
 
         # Variables
         self.remaining_trash = {}
         self.bin_count = {0: 0, 1: 0, 2: 0}
         self.finished = False
-        self.num_located_items = 0
+        self.located_items = set()
         self.bin_type = {0: 'G', 1: 'R', 2: 'O'}
 
         y = data["ROOM_DIMENSIONS"]["Y_MAX"]
@@ -30,19 +30,17 @@ class State(object):
     def update_map(self, data):  # updating the state
         data = data["payload"]
         curr_located_items = data['itemsLocated']
-        num_new_located_items = len(curr_located_items) - self.num_located_items
-
-        # we want to iterate through the curr_located_items from [n = number of located items from prior,
-        # n + number of newly located items]
-        for i in range(self.num_located_items, self.num_located_items + num_new_located_items):
-            x = curr_located_items[i]['x']
-            y = curr_located_items[i]['y']
-            if 'U' in self.curr_map[y][x]:
-                print('Error: this should not be unexplored')
-            elif 'E' in self.curr_map[y][x]:
-                self.curr_map[y][x]['E'].append((curr_located_items[i]['id'], curr_located_items[i]['type'][0]))
-            else:
-                return "Big Error"
+        for i in range(len(curr_located_items)):
+            if curr_located_items[i]['id'] not in self.located_items:
+                self.located_items.add(curr_located_items[i]['id'])
+                x = curr_located_items[i]['x']
+                y = curr_located_items[i]['y']
+                if 'U' in self.curr_map[y][x]:
+                    print('Error: this should not be unexplored')
+                elif 'E' in self.curr_map[y][x]:
+                    self.curr_map[y][x]['E'].append((curr_located_items[i]['id'], curr_located_items[i]['type'][0]))
+                else:
+                    return "Big Error"
 
         finished = data['finished']
         if finished:

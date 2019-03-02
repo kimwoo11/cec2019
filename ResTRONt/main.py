@@ -18,8 +18,11 @@ if __name__ == "__main__":
     robot = Robot(json)
 
     while not curr_state.finished:
+        if 'U' in curr_state.curr_map[robot.pos[1]][robot.pos[0]]:
+            Actions().scan(curr_state, robot.pos[0], robot.pos[1])
+            robot.next_objective = ["", -1, -1, 0]
+
         # Get next instruction
-        print(curr_state.curr_map)
         [next_instr, x, y] = Decisions().eval_function(state=curr_state, robot=robot)
         print(next_instr, x, y)
 
@@ -42,9 +45,9 @@ if __name__ == "__main__":
                 Actions().scan(curr_state, x, y)
                 robot.next_objective = ["", -1, -1, 0]
             elif next_instr == "Unload":
-                Actions.unload(curr_state, robot, x, y)
+                Actions().unload(curr_state, robot, x, y)
             elif next_instr == "Collect":
-                Actions.collect(curr_state, robot, x, y)
+                Actions().collect(curr_state, robot, x, y)
             else:
                 print("Unknown command")
 

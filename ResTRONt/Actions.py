@@ -27,19 +27,22 @@ class Actions:
 
         for id in robot.robot_carry[type]:
             json = Request.post('unloadItem', id)
-            curr_state.bin_count[id] += 1
+            curr_state.bin_count[curr_state.curr_map[y][x]['B']] += 1
         robot.robot_carry[type] = []
 
         pass
 
     def collect(self, curr_state, robot, x, y):
-        while(curr_state.curr_map[y][x]['E'].len != 0):
-            while(curr_state.curr_map[y][x]['E'].len != 0):
-                robot[curr_state.curr_map[y][x]['E'][-1][1]].append(curr_state.curr_map[y][x]['E'][-1][0])
+        length = len(curr_state.curr_map[y][x]['E'])
+        while length:
+            while length:
+                robot.robot_carry[curr_state.curr_map[y][x]['E'][-1][1]].append(curr_state.curr_map[y][x]['E'][-1][0])
                 curr_state.remaining_trash[curr_state.curr_map[y][x]['E'][-1][1]] -= 1
                 json = Request.post('collectItem', curr_state.curr_map[y][x]['E'][-1][0])
                 del curr_state.curr_map[y][x]['E'][-1]
+                length -= 1
             self.scan(curr_state, x, y)
+            length = len(curr_state.curr_map[y][x]['E'])
 
         pass
 

@@ -21,7 +21,7 @@ class Request:
         ''' Parameters: path parameter, option '''
         ''' Return value: raw json if valid, -1 if error '''
 
-        response = requests.post('http://cec2019.ca/' + param + '/' + options, headers = {'token': \
+        response = requests.post('http://cec2019.ca/' + str(param) + '/' + str(options), headers = {'token': \
             'toronto-gWbRmC3Vo7MKnd2niVuBoh76xPxaT8B3noPVnmwanr885uuZf68MEfzuPhRVJFBY'})
 
         json = response.json()
