@@ -3,7 +3,6 @@
 # Function takes the game state and the state of the robot as input, and returns the next objective for the robot
 # Also updates the Robot.nextObjective attribute to track the previously decided objective
 def eval_function(State, Robot):
-
     grid = State.grid
     empty = True
     min_trash
@@ -19,6 +18,3 @@ def eval_function(State, Robot):
 
                 for trash in key:
                     trash
-
-
-
