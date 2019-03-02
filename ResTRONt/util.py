@@ -2,156 +2,83 @@ import random
 import math
 
 
-def eval_function(State, Robot):
-    """
-    Function takes the game state and the state of the robot as input, and returns the next objective for the robot
-    Also updates the Robot.nextObjective attribute to track the previously decided objective
-
-    :param State: object of class State containing all relevant information about the instance
-    :param Robot: object of class Robot containing relevant information about the state of the Robot
-    :return: Returns an array containing the action string( either "Scan", "Collect" or "Unload") and
-             the target position to move to first
-    """
-
-    # Iterating through the list to find closest piece of trash, closest bin, and establish whether the list is either
-    # fully empty or fully unexplored
-
-    grid = State.grid
-    empty = True
-    min_trash = math.inf
-    min_bin = math.inf
-    trash_pos = None
-    bin_pos = None
-
-    for y in range(len(grid)):
-        for x in range(len(grid[y])):
-            item_dir = grid[y][x]
-            key = item_dir.keys()
-            if 'E' not in key:
-                # Not Empty
-                if 'U' in key:
-                    # Unexplored
-                    pass
-                elif "B" in key:
-                    # Bin Location
-                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
-                    if cost < min_bin:
-                        min_bin = cost
-                        bin_pos = (x, y)
-
-                else:
-                    # Some Trash Location
-                    empty = False
-                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
-                    if cost < min_trash:
-                        min_trash = cost
-                        trash_pos = (x, y)
-
-    # Calculates the Heuristic Function score for each possible action
-    scan_score = 0
-    collect_score = 0
-    unload_score = 0
-    kc = 1
-    ku = 1
-    ks = 1
-    if empty:
-        scan_score = ks
-    else:
-        collect_score += kc/max(min_trash, 0.5)
-        tot = sum(Robot.carry.values())
-        if tot != 0:
-            unload_score += ku/max(min_bin, 0.5)
-
-    # Returns the optimal action and saves to Robot.next Objective
-    max_score = max(scan_score, collect_score, unload_score)
-    if max_score == scan_score:
-        scan_spot = (random.randint(0, len(grid[y])), random.randint(0, len(grid)))
-        Robot.nextObjective = ["Scan", scan_spot]
-        return ["Scan", scan_spot]
-
-    if max_score == collect_score:
-        Robot.nextObjective = ["Collect", trash_pos]
-        return ["Collect", trash_pos]
-
-    if max_score == unload_score:
-        Robot.nextObjective = ["Unload", bin_pos]
-        return ["Unload", bin_pos]
-
-
-def eval_2(State, Robot):
-
-    grid = State.grid
-    min_trash = math.inf
-    min_bin = math.inf
-    empty = True
-    trash_pos = None
-    bin_pos = None
-    bin_Pspace = 1
-    bin_Pcarry = 1
-
-    for y in range(len(grid)):
-        for x in range(len(grid[y])):
-            item_dir = grid[y][x]
-
-            key = item_dir.keys()
-            if 'E' not in key:
-                # Not Empty
-                if 'U' in key:
-                    # unexplored
-                    pass
-                elif "B" in key:
-                    # Bin Location
-                    bin_id = item_dir['B']
-                    bin_type = State.binType[bin_id]
-                    # Navigation Cost
-                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
-                    # Reduce cost based on current holdings of specific trash type and remaining space
-                    # in the corresponding bin (relative space to normalize bins with different capacities)
-                    cost -= bin_Pspace*math.abs(State.binCount[bin_id]-State.binCap[bin_id])/State.binCap[bin_id]
-                    cost -= bin_Pcarry*Robot.robotCarry[bin_type]/(1 + sum(Robot.robotCarry.values()))
-
-                    if cost < min_bin:
-                        min_bin = cost
-                        bin_pos = (x, y)
-
-                else:
-                    # Some Trash Location
-                    empty = False
-                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
-                    if cost < min_trash:
-                        min_trash = cost
-                        trash_pos = (x, y)
-
-    scan_score = 0
-    collect_score = 0
-    unload_score = 0
-    kc = 1
-    ku = 1
-    ks = 1
-    if empty:
-        scan_score = ks
-    else:
-        collect_score += kc / max(min_trash, 0.5)
-        unload_score += ku / max(min_bin, 0.5)
-
-    max_score = max(scan_score, collect_score, unload_score)
-    if max_score == scan_score:
-        scan_spot = (random.randint(0, len(grid[y])), random.randint(0, len(grid)))
-        Robot.nextObjective = ["Scan", scan_spot]
-        return ["Scan", scan_spot]
-
-    if max_score == collect_score:
-        Robot.nextObjective = ["Collect", trash_pos]
-        return ["Collect", trash_pos]
-
-    if max_score == unload_score:
-        Robot.nextObjective = ["Unload", bin_pos]
-        return ["Unload", bin_pos]
-
-    return 0
-
-
-# def eval_3(State, Robot):
+# def eval_function(State, Robot):
+#     """
+#     Function takes the game state and the state of the robot as input, and returns the next objective for the robot
+#     Also updates the Robot.nextObjective attribute to track the previously decided objective
+#
+#     :param State: object of class State containing all relevant information about the instance
+#     :param Robot: object of class Robot containing relevant information about the state of the Robot
+#     :return: Returns an array containing the action string( either "Scan", "Collect" or "Unload") and
+#              the target position to move to first
+#     """
+#
+#     # Iterating through the list to find closest piece of trash, closest bin, and establish whether the list is either
+#     # fully empty or fully unexplored
+#
+#     grid = State.grid
+#     empty = True
+#     min_trash = math.inf
+#     min_bin = math.inf
+#     trash_pos = None
+#     bin_pos = None
+#
+#     for y in range(len(grid)):
+#         for x in range(len(grid[y])):
+#             item_dir = grid[y][x]
+#             key = item_dir.keys()
+#             if 'E' not in key:
+#                 # Not Empty
+#                 if 'U' in key:
+#                     # Unexplored
+#                     pass
+#                 elif "B" in key:
+#                     # Bin Location
+#                     cost = nav_cost(Robot.pos, (x, y), State.costQuery)
+#                     if cost < min_bin:
+#                         min_bin = cost
+#                         bin_pos = (x, y)
+#
+#                 else:
+#                     # Some Trash Location
+#                     empty = False
+#                     cost = nav_cost(Robot.pos, (x, y), State.costQuery)
+#                     if cost < min_trash:
+#                         min_trash = cost
+#                         trash_pos = (x, y)
+#
+#     # Calculates the Heuristic Function score for each possible action
+#     scan_score = 0
+#     collect_score = 0
+#     unload_score = 0
+#     kc = 1
+#     ku = 1
+#     ks = 1
+#     if empty:
+#         scan_score = ks
+#     else:
+#         collect_score += kc/max(min_trash, 0.5)
+#         tot = sum(Robot.carry.values())
+#         if tot != 0:
+#             unload_score += ku/max(min_bin, 0.5)
+#
+#     # Returns the optimal action and saves to Robot.next Objective
+#     max_score = max(scan_score, collect_score, unload_score)
+#     if max_score == scan_score:
+#         scan_spot = (random.randint(0, len(grid[y])), random.randint(0, len(grid)))
+#         Robot.nextObjective = ["Scan", scan_spot]
+#         return ["Scan", scan_spot]
+#
+#     if max_score == collect_score:
+#         Robot.nextObjective = ["Collect", trash_pos]
+#         return ["Collect", trash_pos]
+#
+#     if max_score == unload_score:
+#         Robot.nextObjective = ["Unload", bin_pos]
+#         return ["Unload", bin_pos]
+#
+#
+# def eval_2(State, Robot):
 #
 #     grid = State.grid
 #     min_trash = math.inf
@@ -180,8 +107,8 @@ def eval_2(State, Robot):
 #                     cost = nav_cost(Robot.pos, (x, y), State.costQuery)
 #                     # Reduce cost based on current holdings of specific trash type and remaining space
 #                     # in the corresponding bin (relative space to normalize bins with different capacities)
-#                     cost -= bin_Pspace * math.abs(State.binCount[bin_id] - State.binCap[bin_id]) / State.binCap[bin_id]
-#                     cost -= bin_Pcarry * Robot.robotCarry[bin_type] / (1 + sum(Robot.robotCarry.values()))
+#                     cost -= bin_Pspace*math.abs(State.binCount[bin_id]-State.binCap[bin_id])/State.binCap[bin_id]
+#                     cost -= bin_Pcarry*Robot.robotCarry[bin_type]/(1 + sum(Robot.robotCarry.values()))
 #
 #                     if cost < min_bin:
 #                         min_bin = cost
@@ -207,31 +134,112 @@ def eval_2(State, Robot):
 #         collect_score += kc / max(min_trash, 0.5)
 #         unload_score += ku / max(min_bin, 0.5)
 #
-#     max_score = max(scan_score, collect_score, unload_score)    # Max score at current state
-#     next_obj = Robot.nextObjective                              # Current Robot Objective
-#
-#     if max_score == scan_score:
-#         next_obj
-#     elif max_score == collect_score:
-#
-#     elif max_score == unload_score:
-#
-#
+#     max_score = max(scan_score, collect_score, unload_score)
 #     if max_score == scan_score:
 #         scan_spot = (random.randint(0, len(grid[y])), random.randint(0, len(grid)))
-#         Robot.nextObjective = ["Scan", scan_spot[0], scan_spot[1]]
-#         return ["Scan", scan_spot[0], scan_spot[1]]
+#         Robot.nextObjective = ["Scan", scan_spot]
+#         return ["Scan", scan_spot]
 #
 #     if max_score == collect_score:
-#         Robot.nextObjective = ["Collect", trash_pos[0], trash_pos[1]]
-#         return ["Collect", trash_pos[0], trash_pos[1]]
+#         Robot.nextObjective = ["Collect", trash_pos]
+#         return ["Collect", trash_pos]
 #
 #     if max_score == unload_score:
-#         Robot.nextObjective = ["Unload", bin_pos[0], bin_pos[1]]
-#         return ["Unload", bin_pos[0], bin_pos[1]]
-# 
+#         Robot.nextObjective = ["Unload", bin_pos]
+#         return ["Unload", bin_pos]
 #
 #     return 0
+
+
+def eval_3(State, Robot):
+
+    grid = State.grid
+    min_trash = math.inf
+    min_bin = math.inf
+    trash_pos = None
+    bin_pos = None
+    bin_Pspace = 1
+    bin_Pcarry = 1
+    unexplored = 0
+    trashy = 0
+
+    for y in range(len(grid)):
+        for x in range(len(grid[y])):
+            item_dir = grid[y][x]
+
+            key = item_dir.keys()
+            if "U" in key:
+                # unexplored
+                unexplored += 1
+
+            if "B" in key:
+                # Bin Location
+                bin_id = item_dir['B']
+                bin_type = State.binType[bin_id]
+                # Navigation Cost
+                cost = nav_cost(Robot.pos, (x, y), State.costQuery)
+                # Reduce cost based on current holdings of specific trash type and remaining space
+                # in the corresponding bin (relative space to normalize bins with different capacities)
+                cost -= bin_Pspace * math.abs(State.binCount[bin_id] - State.binCap[bin_id]) / State.binCap[bin_id]
+                cost -= bin_Pcarry * Robot.robotCarry[bin_type] / (1 + sum(Robot.robotCarry.values()))
+
+                if cost < min_bin:
+                    min_bin = cost
+                    bin_pos = (x, y)
+
+            if 'E' in key:
+                if len(item_dir["E"])!=0:
+                    # Not an empty list
+                    empty = False
+                    trashy +=1
+                    # Some Trash Location
+                    cost = nav_cost(Robot.pos, (x, y), State.costQuery)
+                    if cost < min_trash:
+                        min_trash = cost
+                        trash_pos = (x, y)
+
+
+    kc = 1
+    ku = 1
+    ks = 1
+
+    if empty:
+        scan_score = ks
+        collect_score = 0
+        unload_score = 0
+    else:
+        collect_score = kc / max(min_trash, 0.5)
+        unload_score = ku / max(min_bin, 0.5)
+
+        scan_score = ks* unexplored / len(State.grid)*len(State.grid[0])*max(0.5, trashy)
+
+    max_score = max(scan_score, collect_score, unload_score)    # Max score at current state
+    next_obj = Robot.nextObjective                              # Current Robot Objective
+
+
+    # Momentum Term
+    if max_score == scan_score:
+        next_obj
+    elif max_score == collect_score:
+
+    elif max_score == unload_score:
+
+
+    if max_score == scan_score:
+        scan_spot = (random.randint(0, len(grid[y])), random.randint(0, len(grid)))
+        Robot.nextObjective = ["Scan", scan_spot[0], scan_spot[1]]
+        return ["Scan", scan_spot[0], scan_spot[1]]
+
+    if max_score == collect_score:
+        Robot.nextObjective = ["Collect", trash_pos[0], trash_pos[1]]
+        return ["Collect", trash_pos[0], trash_pos[1]]
+
+    if max_score == unload_score:
+        Robot.nextObjective = ["Unload", bin_pos[0], bin_pos[1]]
+        return ["Unload", bin_pos[0], bin_pos[1]]
+
+
+    return 0
 
 
 def nav_cost(curr, targ, costs):
