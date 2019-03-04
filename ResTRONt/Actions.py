@@ -28,6 +28,7 @@ class Actions:
         for id in robot.robot_carry[type]:
             json = Request.post('unloadItem', id)
             curr_state.bin_count[curr_state.curr_map[y][x]['B']] += 1
+
         robot.robot_carry[type] = []
 
         pass

@@ -39,8 +39,6 @@ if __name__ == "__main__":
             # print("Next instruction: ", next_instr)
             # print("Target x: ", x)
             # print("Target y: ", y)
-            print("hey")
-
             if next_instr == "Scan":
                 Actions().scan(curr_state, x, y)
                 robot.next_objective = ["", -1, -1, 0]

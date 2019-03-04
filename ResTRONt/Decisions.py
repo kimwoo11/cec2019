@@ -25,7 +25,7 @@ class Decisions:
         bin_Pcarry = 1
         unexplored = 0
         trashy = 0
-        momentum = 1
+        momentum = 0.25
 
         for y in range(len(grid)):
             for x in range(len(grid[y])):
@@ -65,7 +65,7 @@ class Decisions:
                             min_trash = cost
                             trash_pos = (x, y)
         kc = 1
-        ku = 5
+        ku = 2
         ks = 3
 
         if empty:
